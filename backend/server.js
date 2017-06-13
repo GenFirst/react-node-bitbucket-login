@@ -57,11 +57,11 @@ var generateToken = function (req, res, next) {
 
 var sendToken = function (req, res) {
   res.setHeader('x-auth-token', req.token);
-  res.status(200).send(req.auth);
+  res.status(200).send(req.user);
 };
 
-router.route('/auth/facebook')
-  .post(passport.authenticate('facebook-token', {session: false}), function(req, res, next) {
+router.route('/auth/bitbucket')
+  .post(passport.authenticate('bitbucket-token', {session: false}), function(req, res, next) {
     if (!req.user) {
       return res.send(401, 'User Not Authenticated');
     }
@@ -111,7 +111,7 @@ router.route('/auth/me')
 
 app.use('/api/v1', router);
 
-app.listen(3000);
+app.listen(4000);
 module.exports = app;
 
-console.log('Server running at http://localhost:3000/');
+console.log('Server running at http://localhost:4000/');
