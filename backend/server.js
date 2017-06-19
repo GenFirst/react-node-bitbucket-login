@@ -52,12 +52,12 @@ var createToken = function(auth) {
 
 var generateToken = function (req, res, next) {
   req.token = createToken(req.auth);
-  next();
+  return next();
 };
 
 var sendToken = function (req, res) {
   res.setHeader('x-auth-token', req.token);
-  res.status(200).send(req.user);
+  return res.status(200).send(JSON.stringify(req.user));
 };
 
 router.route('/auth/bitbucket')
@@ -71,7 +71,7 @@ router.route('/auth/bitbucket')
       id: req.user.id
     };
 
-    next();
+    return next();
   }, generateToken, sendToken);
 
 //token handling middleware
@@ -100,7 +100,7 @@ var getCurrentUser = function(req, res, next) {
 var getOne = function (req, res) {
   var user = req.user.toObject();
 
-  delete user['facebookProvider'];
+  delete user['bitbucketProvider'];
   delete user['__v'];
 
   res.json(user);

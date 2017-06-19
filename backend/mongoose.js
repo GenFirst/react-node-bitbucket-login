@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
 
 module.exports = function () {
 
-  var db = mongoose.connect('mongodb://localhost:27017/fb-demo');
+  var db = mongoose.connect('mongodb://localhost:27017/bitbucket-demo');
 
   var UserSchema = new Schema({
     email: {
@@ -13,7 +13,7 @@ module.exports = function () {
       trim: true, unique: true,
       match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
     },
-    facebookProvider: {
+    bitbucketProvider: {
       type: {
         id: String,
         token: String
@@ -24,16 +24,16 @@ module.exports = function () {
 
   UserSchema.set('toJSON', {getters: true, virtuals: true});
 
-  UserSchema.statics.upsertFbUser = function(accessToken, refreshToken, profile, cb) {
+  UserSchema.statics.upsertBitbuketUser = function(accessToken, refreshToken, profile, cb) {
     var that = this;
     return this.findOne({
-      'facebookProvider.id': profile.id
+      'bitbucketProvider.id': profile.id
     }, function(err, user) {
       // no user was found, lets create a new one
       if (!user) {
         var newUser = new that({
           email: profile.emails[0].value,
-          facebookProvider: {
+          bitbucketProvider: {
             id: profile.id,
             token: accessToken
           }
