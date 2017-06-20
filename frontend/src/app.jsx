@@ -18,26 +18,30 @@ class App extends Component {
     this.logout = this.logout.bind(this);
   }
 
-  componentDidMount() {
+  authenticate(key) {
     let that = this;
+    this.client.post('/auth/bitbucket', {
+      access_token: key
+    })
+      .then(response => {
+        this.client = axios.create({
+          baseURL: 'http://localhost:4000/api/v1/',
+          timeout: 3000,
+          headers: {'x-auth-token': response.headers['x-auth-token']}
+        });
+        that.setState({isAuthenticated: true, token: response.headers['x-auth-token'], user: response.data, key: key});
+      })
+      .catch(error => {
+        console.log(error);
+        that.setState({isAuthenticated: false, token: '', user: null, key: key});
+      });
+  }
+
+  componentDidMount() {
     let params = window.location.hash.split('&');
     if (params.length > 0 && params[0].startsWith('#access_token=')) {
       let key = decodeURIComponent(params[0].replace('#access_token=', ''));
-
-      this.client.post('/auth/bitbucket', {
-        access_token: key
-      })
-        .then(response => {
-          this.client = axios.create({
-            baseURL: 'http://localhost:4000/api/v1/',
-            timeout: 3000,
-            headers: {'x-auth-token': response.headers['x-auth-token']}
-          });
-          that.setState({isAuthenticated: true, token: response.headers['x-auth-token'], user: response.data, key: key});
-        })
-        .catch(error => {
-          that.setState({isAuthenticated: false, token: '', user: null, key: key});
-        });
+      this.authenticate(key);
     }
   }
 
